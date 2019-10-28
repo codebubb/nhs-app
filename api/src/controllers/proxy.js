@@ -4,7 +4,7 @@ import Redis from 'ioredis';
 import axios from 'axios';
 import config from '../config';
 
-export default class ProxyModel {
+export default class ProxyController{
     constructor() {
         this.headers = {
             'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ export default class ProxyModel {
                 response = data;
                 return this.redis.set(path, JSON.stringify(response));
             })
-            .then(() => JSON.stringify(response));
+            .then(() => response);
     };
 
     proxyRequest(req, res) {
@@ -33,27 +33,25 @@ export default class ProxyModel {
         const { pathname } = requestURL;
         let response;
 
-        // Check in REDIS.
-        console.log(this.redis);
-
         this.redis.get(pathname)
             .then(result => {
                 if (result) {
                     console.log(green('Hit from Redis'));
-                    return result;
+                    const parsed = JSON.parse(result);
+                    parsed.fromCache = true;
+                    return parsed;
                 }
                 return this.getExternalData(pathname);
             })
-            .then((response) => {
+            .then(response => {
                 res.writeHead(200, this.headers);
-                res.end(response);
-            })
-            .catch(response => {
-                console.log(red(response));
-                res.writeHead(500, this.headers);
                 res.end(JSON.stringify(response));
             })
-            .catch(console.log);
+            .catch(error => {
+                console.log(red(error));
+                res.writeHead(500, this.headers);
+                res.end(JSON.stringify(error));
+            })
     };
 }
 
