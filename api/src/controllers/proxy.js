@@ -26,12 +26,11 @@ export default class ProxyController{
                 return this.redis.set(path, JSON.stringify(response));
             })
             .then(() => response);
-    };
+    }
 
     proxyRequest(req, res) {
         const requestURL = url.parse(req.url);
         const { pathname } = requestURL;
-        let response;
 
         this.redis.get(pathname)
             .then(result => {
@@ -52,6 +51,6 @@ export default class ProxyController{
                 res.writeHead(500, this.headers);
                 res.end(JSON.stringify(error));
             })
-    };
+    }
 }
 

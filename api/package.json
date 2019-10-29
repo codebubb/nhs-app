@@ -6,14 +6,21 @@
   "devDependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
     "@babel/preset-env": "^7.6.3",
-    "nodemon": "^1.19.4"
+    "chai": "^4.2.0",
+    "eslint": "^6.6.0",
+    "mocha": "^6.2.2",
+    "nodemon": "^1.19.4",
+    "nyc": "^14.1.1",
+    "sinon": "^7.5.0"
   },
   "scripts": {
-    "build": "babel -w src -d dist",
-    "run-app": "nodemon dist/app",
-    "start": "npm run build & npm run run-app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run lint && npm run coverage && babel src -d dist",
+    "start": "nodemon --exec babel-node src/app.js",
+    "unit": "babel-node ./node_modules/.bin/mocha --timeout 5s test",
+    "coverage": "nyc npm run unit",
+    "lint": "eslint src"
   },
   "keywords": [],
   "author": "",
