@@ -14,14 +14,16 @@
     "nock": "^11.6.0",
     "nodemon": "^1.19.4",
     "nyc": "^14.1.1",
+    "parcel": "^1.12.4",
     "sinon": "^7.5.0"
   },
   "scripts": {
-    "build": "npm run lint && npm run coverage && babel src -d dist",
+    "build": "parcel build src/app.js",
     "start": "nodemon --exec babel-node src/app.js",
     "unit": "babel-node ./node_modules/.bin/mocha --timeout 5s test",
     "coverage": "nyc npm run unit",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "npm run lint && npm run coverage"
   },
   "keywords": [],
   "author": "",

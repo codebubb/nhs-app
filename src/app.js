@@ -2,7 +2,7 @@
 import { createServer } from 'http';
 import { green } from 'chalk';
 import ProxyController from './controllers/proxy';
-import config from './config';
+import config from '../config';
 
 const proxyController = new ProxyController(config);
 const server = createServer(proxyController.proxyRequest.bind(proxyController));

@@ -8,9 +8,10 @@ import Redis from 'ioredis';
 
 describe('Proxy Controller:', function() {
     let proxyController;
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     const configStub = {
         BASE_URL: 'http://localhost',
+        subscriptionKey: '1234',
     };
 
     beforeEach(() => {

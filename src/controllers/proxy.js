@@ -3,6 +3,9 @@ import { green, red } from 'chalk';
 import Redis from 'ioredis';
 import axios from 'axios';
 
+/**
+ * Handles requests to be sent to an external source
+ */
 export default class ProxyController{
 
     constructor(config) {
@@ -12,16 +15,28 @@ export default class ProxyController{
             'Access-Control-Allow-Methods': 'GET',
         };
 
+        this.subscriptionKey = config.subscriptionKey;
         this.baseUrl = config.BASE_URL;
         this.redis = new Redis();
     }
     
+    /**
+     * Get data from an external URL
+     * Cache data in Redis and return stringified result of JSON
+     *
+     * @param {string} path
+     * @return {string} 
+     */
     getExternalData(path) {
         const targetURL = `${this.baseUrl}${path}`;
         console.log(green(`Proxy GET request to : ${targetURL}`));
         let response;
 
-        return axios.get(targetURL)
+        return axios.get(
+            targetURL, {
+            headers: {
+                'subscription-key': this.subscriptionKey,
+            }})
             .then(({ data }) => {
                 console.log(green('Hit From External'));
                 response = data;
@@ -30,6 +45,13 @@ export default class ProxyController{
             .then(() => response);
     }
 
+    /**
+     * Handles the incoming request and either returns data from cache
+     * or calls out to the external URL for data
+     *
+     * @param {object} req 
+     * @param {object} res 
+     */
     proxyRequest(req, res) {
         const requestURL = url.parse(req.url);
         const { pathname } = requestURL;
